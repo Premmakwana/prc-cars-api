@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:book-my-car-system-api="http://www.mulesoft.org/schema/mule/book-my-car-system-api" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/book-my-car-system-api http://www.mulesoft.org/schema/mule/book-my-car-system-api/current/mule-book-my-car-system-api.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<book-my-car-system-api:config name="BookMyCar_System_Api_Config" doc:name="BookMyCar-System-Api Config" doc:id="e001410d-53f7-419d-9f47-95ae4a2b4ce3" property_host="sys-bookmycar-api.us-e2.cloudhub.io" property_port="8081" property_protocol="HTTP" property_basePath="/api/carBooking" property_responseTimeout="1000000000"/>
+	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="42eebf1b-f3e7-405e-a40d-603814f43e5b" >
+		<http:request-connection host="sys-bookmycar-api.us-e2.cloudhub.io" />
+	</http:request-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="f1269a33-4f19-4219-b595-83fa4f42af01" >
+		<file:connection workingDir="C:\CarDetailsData" />
+	</file:config>
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="1a346226-2a31-47ee-a827-cb3a0bd9c7f1" >
+		<db:my-sql-connection host="database-1.cmbzenyvghde.us-east-2.rds.amazonaws.com" port="3306" user="admin" password=".adgjmps055" database="bookmyholiday" />
+	</db:config>
+	<flow name="getCarFlow" doc:id="97bd9200-8a54-45dc-9b74-fa3c68120291" >
+		<set-variable value="#[attributes.queryParams.City]" doc:name="Set Variable" doc:id="3f1687e6-3a73-4f64-8781-5eb57a72e441" variableName="city"/>
+		<ee:cache doc:name="Cache" doc:id="b5d16611-a8d4-473f-9d48-1243ceecdc49" >
+			<http:request method="GET" doc:name="Request" doc:id="1483e72f-65c1-476a-8105-7e73d243a316" config-ref="HTTP_Request_configuration" path="api/carBooking">
+			<http:query-params><![CDATA[#[{
+	"city" : vars.city
+}]]]></http:query-params>
+		</http:request>
+		</ee:cache>
+		<ee:transform doc:name="Transform Message" doc:id="cdc99b12-0cb9-4e04-a5c6-8eb831f9f0bf">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="bookCarFlow" doc:id="c25ddde8-3de0-485b-9ad0-a0f568afb0d7" >
+		<set-variable value="#[attributes.queryParams.carId]" doc:name="Set Variable" doc:id="06636d20-4863-47c1-868a-ed426e00d872" variableName="Id"/>
+		<db:select doc:name="Select" doc:id="1c4e04d0-c686-4886-b1c7-e9d1ed1b26ad" config-ref="Database_Config">
+			<db:sql ><![CDATA[select * from bookmyholiday.cars
+where carId = :carid]]></db:sql>
+			<db:input-parameters ><![CDATA[#[{
+	carid : vars.Id
+}]]]></db:input-parameters>
+		</db:select>
+		<ee:transform doc:name="Transform Message" doc:id="53a729b2-deb0-4335-be55-a84b92731571" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload[0]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<flow-ref doc:name="Flow Reference" doc:id="acb4aad6-2755-4cf0-8134-08122296940a" name="fileWriteFlow"/>
+		<ee:transform doc:name="Transform Message" doc:id="f1df7edc-7d04-4c69-a94a-444649ef87f4" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+"car booked"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	<flow name="fileWriteFlow" doc:id="71d0c597-9031-4c4b-b29b-fb17be70fa30" >
+		<file:write doc:name="Write" doc:id="356ad358-6cc8-418a-b111-ae54ae08dadb" config-ref="File_Config" path="#['C:/CarDetailsData/input/' ++ payload.carId ++ '.json']" mode="CREATE_NEW">
+		</file:write>
+		<file:list doc:name="List" doc:id="07d7e580-a0c6-4cd5-9824-6ef6ea51a738" config-ref="File_Config" directoryPath="C:\CarDetailsData\input"/>
+		<ee:transform doc:name="Transform Message" doc:id="168e7e99-1116-4246-8462-bf2609284931" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="28ac172e-b50e-4331-9a32-ecb04bd5ed3e" type="FILE:FILE_ALREADY_EXISTS">
+				<set-payload value="car already booked" doc:name="Set Payload" doc:id="f6a10330-264c-451b-b278-5514dca624bd" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+	<flow name="cancelCarFlow" doc:id="8e198d54-c9b9-4b72-ace0-4e26e4699266" >
+		<set-variable value="#[attributes.queryParams.carId]" doc:name="Set Variable" doc:id="6e3f530b-bcf4-472d-8a0d-45917082b2c4" variableName="var"/>
+		<file:delete doc:name="Delete" doc:id="aacdfac3-346d-4bd0-9549-61712ed47c17" config-ref="File_Config" path="#['C:/CarDetailsData/input/'++ vars.&quot;var&quot; ++ '.json']"/>
+		<ee:transform doc:name="Transform Message" doc:id="7f2fa9ec-6024-4bb3-9dea-0534988ee756" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"Car booking cancelled"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<error-handler >
+			<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="72ae204f-47d8-46b4-9519-57e9bb708943" type="FILE:ILLEGAL_PATH">
+				<set-payload value='#["car not found"]' doc:name="Set Payload" doc:id="11d79034-ede1-4ab1-a396-8dd579fc6376" />
+			</on-error-continue>
+		</error-handler>
+	</flow>
+</mule>
