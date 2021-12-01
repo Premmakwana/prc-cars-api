@@ -32,19 +32,20 @@
 				<configuration>
 					<cloudHubDeployment>
 						<uri>https://anypoint.mulesoft.com</uri>
-						<muleVersion>4.4.0</muleVersion>
-						<username>prem0555</username>
-						<password>PremBhai@786</password>
-						<applicationName>prc-flightBooking-api</applicationName>
-						<environment>sandbox</environment>
-						<businessGroup>Apisero</businessGroup>
-						<workerType>micro</workerType>
+						<muleVersion>${muleVersion}</muleVersion>
+						<username>${username}</username>
+						<password>${password}</password>
+						<applicationName>${applicationName}</applicationName>
+						<environment>${environment}</environment>
+						<businessGroup>${businessGroup}</businessGroup>
+						<workerType>${workerType}</workerType>
 						<objectStoreV2>true</objectStoreV2>
 						<properties>
-							<anypoint.platform.client_id>07ee51648eac46b5857b2c3db480572b</anypoint.platform.client_id>
-							<anypoint.platform.client_secret>Edace1BE6abb4add899b1c5EF63C1A09</anypoint.platform.client_secret>
+							<anypoint.platform.client_id>${anypoint.platform.client_id}</anypoint.platform.client_id>
+							<anypoint.platform.client_secret>${anypoint.platform.client_secret}</anypoint.platform.client_secret>
 						</properties>
 					</cloudHubDeployment>
+					<classifier>mule-application</classifier>
 					<sharedLibraries>
 						<sharedLibrary>
 							<groupId>mysql</groupId>
