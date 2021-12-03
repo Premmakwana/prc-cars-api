@@ -1,17 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<mule xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp" xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp"
-	xmlns:file="http://www.mulesoft.org/schema/mule/file"
-	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:sftp="http://www.mulesoft.org/schema/mule/sftp"
+	xmlns:ftp="http://www.mulesoft.org/schema/mule/ftp"
+	xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd
 http://www.mulesoft.org/schema/mule/ftp http://www.mulesoft.org/schema/mule/ftp/current/mule-ftp.xsd
-http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd">
+http://www.mulesoft.org/schema/mule/sftp http://www.mulesoft.org/schema/mule/sftp/current/mule-sftp.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
 	<flow name="Scheduler_flowFlow" doc:id="222f74f8-cf24-4fe9-9cbe-06c0b42a8ef8" >
 		<scheduler doc:name="Scheduler" doc:id="45a67415-22ee-439b-8f1e-4a86c67760dd" >
 			<scheduling-strategy >
-				<fixed-frequency />
+				<fixed-frequency frequency="10" timeUnit="SECONDS"/>
 			</scheduling-strategy>
 		</scheduler>
-		<file:move doc:name="Move" doc:id="1b2d26ce-a135-439a-a60c-a2d2b4e4f804" config-ref="File_Config" sourcePath="C:\CarDetailsData\input" targetPath="#['C:/CarDetailsData/output' ++ vars.carname ++ '/']" createParentDirectories="false" />
+		<file:list doc:name="List" doc:id="5119e37d-f64d-4d05-957f-634dd4837575" directoryPath="C:\CarDetailsData\input"/>
+		<logger level="INFO" doc:name="Logger" doc:id="27710bbd-111b-42c7-80ad-3ae0737a8909" message="#[payload]"/>
+		<foreach doc:name="For Each" doc:id="c4444a05-32a1-4d2e-8896-220ac2f68adc" collection="#[payload]">
+			<file:move doc:name="Move" doc:id="1b2d26ce-a135-439a-a60c-a2d2b4e4f804" config-ref="File_Config" sourcePath="#['C:/CarDetailsData/input/' ++ payload.carprovider ++ '.json']" targetPath="#['C:/CarDetailsData/output/' ++ payload.carprovider ++ '/']" createParentDirectories="false" />
+		</foreach>
 	</flow>
 </mule>

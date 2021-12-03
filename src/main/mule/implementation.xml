@@ -38,13 +38,15 @@ payload]]></ee:set-payload>
 	</flow>
 	<flow name="bookCarFlow" doc:id="c25ddde8-3de0-485b-9ad0-a0f568afb0d7" >
 		<set-variable value="#[attributes.queryParams.carId]" doc:name="Set Variable" doc:id="06636d20-4863-47c1-868a-ed426e00d872" variableName="Id"/>
-		<db:select doc:name="Select" doc:id="1c4e04d0-c686-4886-b1c7-e9d1ed1b26ad" config-ref="Database_Config">
-			<db:sql ><![CDATA[select * from bookmyholiday.cars
+		<ee:cache doc:name="Cache" doc:id="27084d70-909a-4dc5-a894-585802f7db73" >
+			<db:select doc:name="Select" doc:id="1c4e04d0-c686-4886-b1c7-e9d1ed1b26ad" config-ref="Database_Config">
+			<db:sql><![CDATA[select * from bookmyholiday.cars
 where carId = :carid]]></db:sql>
-			<db:input-parameters ><![CDATA[#[{
+			<db:input-parameters><![CDATA[#[{
 	carid : vars.Id
 }]]]></db:input-parameters>
 		</db:select>
+		</ee:cache>
 		<ee:transform doc:name="Transform Message" doc:id="53a729b2-deb0-4335-be55-a84b92731571" >
 			<ee:message >
 				<ee:set-payload ><![CDATA[%dw 2.0
