@@ -10,14 +10,15 @@ http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/htt
 http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
 	<book-my-car-system-api:config name="BookMyCar_System_Api_Config" doc:name="BookMyCar-System-Api Config" doc:id="e001410d-53f7-419d-9f47-95ae4a2b4ce3" property_host="sys-bookmycar-api.us-e2.cloudhub.io" property_port="8081" property_protocol="HTTP" property_basePath="/api/carBooking" property_responseTimeout="1000000000"/>
 	<http:request-config name="HTTP_Request_configuration" doc:name="HTTP Request configuration" doc:id="42eebf1b-f3e7-405e-a40d-603814f43e5b" >
-		<http:request-connection host="sys-bookmycar-api.us-e2.cloudhub.io" />
+		<http:request-connection host="${request.url}" />
 	</http:request-config>
 	<file:config name="File_Config" doc:name="File Config" doc:id="f1269a33-4f19-4219-b595-83fa4f42af01" >
 		<file:connection workingDir="C:\CarDetailsData" />
 	</file:config>
 	<db:config name="Database_Config" doc:name="Database Config" doc:id="1a346226-2a31-47ee-a827-cb3a0bd9c7f1" >
-		<db:my-sql-connection host="database-1.cmbzenyvghde.us-east-2.rds.amazonaws.com" port="3306" user="admin" password=".adgjmps055" database="bookmyholiday" />
+		<db:my-sql-connection host="${db.host}" port="${db.port}" user="${db.username}" password="${db.password}" database="${db.database}" />
 	</db:config>
+	<configuration-properties doc:name="Configuration properties" doc:id="e2348896-c918-4dbc-8f31-6346515dc99b" file="config.yaml" />
 	<flow name="getCarFlow" doc:id="97bd9200-8a54-45dc-9b74-fa3c68120291" >
 		<set-variable value="#[attributes.queryParams.City]" doc:name="Set Variable" doc:id="3f1687e6-3a73-4f64-8781-5eb57a72e441" variableName="city"/>
 		<ee:cache doc:name="Cache" doc:id="b5d16611-a8d4-473f-9d48-1243ceecdc49" >

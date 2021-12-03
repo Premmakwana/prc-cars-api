@@ -1,0 +1,9 @@
+db:
+  host: "database-1.cmbzenyvghde.us-east-2.rds.amazonaws.com"
+  port: "3306"
+  username: "admin"
+  password: ".adgjmps055"
+  database: "bookmyholiday"
+  
+request: 
+  url: "sys-bookmycar-api.us-e2.cloudhub.io"
