@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="implementation-suite.xml" />
+	<munit:test name="getCarFlow-test" doc:id="011c28ff-0f8e-4052-b99e-de9bd6e4416a" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Request" doc:id="e9c541f6-8f95-4f95-b839-03935a9bce33" processor="http:request">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="1483e72f-65c1-476a-8105-7e73d243a316" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/json --- readUrl('classpath://getCarFlowtest\mock_payload.dwl')]" mediaType="application/json" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://getCarFlowtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://getCarFlowtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="city" value="#[output application/java --- readUrl('classpath://getCarFlowtest\mock_variable_1.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy Transform Message" doc:id="e947d530-e421-4eb8-8daf-8eccadf62e66" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="cdc99b12-0cb9-4e04-a5c6-8eb831f9f0bf" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="ad0b9ee3-c15b-4e59-bd85-4a292d82fad6" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import getCarFlowtest::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="7d6f6265-29b5-41c2-aa87-c979d1e7267c" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import getCarFlowtest::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="8651b67d-9351-417d-81a8-fc9eb83f98e9" >
+				<munit:payload value="#[readUrl('classpath://getCarFlowtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://getCarFlowtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://getCarFlowtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to getCarFlow" doc:id="6230c70a-7ce6-4936-a551-634384fddbe2" name="getCarFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="212694e3-cd7b-4474-8050-8319defc0376" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import getCarFlowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="5bd138c3-61f6-4579-a7e8-be4fb1f6a68b" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="cdc99b12-0cb9-4e04-a5c6-8eb831f9f0bf" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="bookCarFlow-test" doc:id="d1bba940-8b2f-4e1f-87d2-ad46ba74e499" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Select" doc:id="00229ed4-9f5f-40eb-8630-a39ca84096e3" processor="db:select">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="1c4e04d0-c686-4886-b1c7-e9d1ed1b26ad" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[output application/java --- readUrl('classpath://bookCarFlowtest\mock_payload.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://bookCarFlowtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="Id" value="#[output application/java --- readUrl('classpath://bookCarFlowtest\mock_variable_1.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit-tools:spy doc:name="Spy Transform Message" doc:id="e8d0f748-9e7f-49d4-88ff-f90547b9db02" processor="ee:transform">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="53a729b2-deb0-4335-be55-a84b92731571" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:before-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="5025bf14-b9bf-4734-afca-38ee242ae358" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import bookCarFlowtest::spy_assert_payload
+---
+spy_assert_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:before-call>
+				<munit-tools:after-call >
+					<munit-tools:assert doc:name="Assert payload" doc:id="96bb6951-d4dd-49e8-9adf-7f46dfe0ff91" message="The payload does not match">
+						<munit-tools:that ><![CDATA[#[%dw 2.0
+import bookCarFlowtest::spy_assert_payload1
+---
+spy_assert_payload1::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+					</munit-tools:assert>
+				</munit-tools:after-call>
+			</munit-tools:spy>
+			<munit:set-event doc:name="Set Input" doc:id="e38d51b6-a51c-4953-a5a5-1043151bc439" >
+				<munit:payload value="#[readUrl('classpath://bookCarFlowtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://bookCarFlowtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://bookCarFlowtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to bookCarFlow" doc:id="5616e197-9028-4fc8-a26d-6e61a0f4ec98" name="bookCarFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="c4d7b12b-616e-45eb-9c07-c50c1031ee7b" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import bookCarFlowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="351d7464-aa99-4b41-ad32-16c1388cb3bb" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="f1df7edc-7d04-4c69-a94a-444649ef87f4" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Flow Reference" doc:id="2ca2a865-a8d0-4030-9a81-8f7bb946993e" processor="flow-ref" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="acb4aad6-2755-4cf0-8134-08122296940a" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="dc5e82e6-46cc-40a5-9c15-328a92591417" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="53a729b2-deb0-4335-be55-a84b92731571" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+	<munit:test name="cancelCarFlow-test" doc:id="f1218496-0734-4f69-8775-386711abdd4b" >
+		<munit:behavior >
+			<munit-tools:mock-when doc:name="Mock Delete" doc:id="afccf026-faf1-4e20-8366-01202d6d507f" processor="file:delete">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="aacdfac3-346d-4bd0-9549-61712ed47c17" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+				<munit-tools:then-return >
+					<munit-tools:payload value="#[readUrl('classpath://cancelCarFlowtest\mock_payload.dwl')]" encoding="UTF-8" />
+					<munit-tools:attributes value="#[readUrl('classpath://cancelCarFlowtest\mock_attributes.dwl')]" />
+					<munit-tools:variables >
+						<munit-tools:variable key="outboundHeaders" value="#[readUrl('classpath://cancelCarFlowtest\mock_variable_.dwl')]" />
+						<munit-tools:variable key="var" value="#[output application/java --- readUrl('classpath://cancelCarFlowtest\mock_variable_1.dwl')]" mediaType="application/java" encoding="UTF-8" />
+					</munit-tools:variables>
+				</munit-tools:then-return>
+			</munit-tools:mock-when>
+			<munit:set-event doc:name="Set Input" doc:id="b26906d1-d7e9-495c-afec-d32f783ebcc3" >
+				<munit:payload value="#[readUrl('classpath://cancelCarFlowtest\set-event_payload.dwl')]" encoding="UTF-8" />
+				<munit:attributes value="#[readUrl('classpath://cancelCarFlowtest\set-event_attributes.dwl')]" />
+				<munit:variables >
+					<munit:variable key="outboundHeaders" value="#[readUrl('classpath://cancelCarFlowtest\set-event_variable_.dwl')]" />
+				</munit:variables>
+			</munit:set-event>
+		</munit:behavior>
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to cancelCarFlow" doc:id="d7d80396-09d9-47a0-8edf-ba4463122165" name="cancelCarFlow"/>
+		</munit:execution>
+		<munit:validation >
+			<munit-tools:assert doc:name="Assert payload" doc:id="24610acc-2e60-46de-ba28-468dd069be1e" message="The payload does not match">
+				<munit-tools:that ><![CDATA[#[%dw 2.0
+import cancelCarFlowtest::assert_expression_payload
+---
+assert_expression_payload::main({payload: payload, attributes: attributes, vars: vars})]]]></munit-tools:that>
+			</munit-tools:assert>
+			<munit-tools:verify-call doc:name="Verify Transform Message" doc:id="04d5c96c-bb72-4758-8ef0-612d99debfc8" processor="ee:transform" times="1">
+				<munit-tools:with-attributes >
+					<munit-tools:with-attribute whereValue="7f2fa9ec-6024-4bb3-9dea-0534988ee756" attributeName="doc:id" />
+				</munit-tools:with-attributes>
+			</munit-tools:verify-call>
+		</munit:validation>
+	</munit:test>
+
+
+</mule>
